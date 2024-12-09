@@ -114,12 +114,12 @@ class UserTable():
         return table
 
 # 存储UserTable对象
-def save_users(users, filename='users.pkl'):
+def save_users(users, filename='./data/users.pkl'):
     with open(filename, 'wb') as f:
         pickle.dump(users, f)
 
 # 从本地文件加载UserTable对象
-def load_users(filename='users.pkl'):
+def load_users(filename='./data/users.pkl'):
     with open(filename, 'rb') as f:
         return pickle.load(f)
 
@@ -144,7 +144,7 @@ while True:
     for data in data_list:
         users.updateUser(data)
     save_users(users)
-    users.getNewestRankTable().to_csv('./new.csv', index=False)
-    users.getHighestRankTable().to_csv('./high.csv', index=False)
+    users.getNewestRankTable().to_csv('./data/new.csv', index=False)
+    users.getHighestRankTable().to_csv('./data/high.csv', index=False)
     print('Done!')
     sleep(10)

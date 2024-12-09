@@ -4,6 +4,7 @@ import json
 from datetime import datetime
 from time import sleep
 import pickle
+import numpy as np
 
 def getJSON():
     url = "https://matchapi.delist.cn/integral_rank"
@@ -79,24 +80,38 @@ class UserTable():
             self.users[data['username']] = UserInfo(data['username'], data['nickname'], data['update_time'], data['max_score'])
 
     def getNewestRankTable(self):
-        table = {'Rank':[], 'Nickname':[], 'UpdataTime':[], 'Score':[]}
+        table = {'Nickname':[], 'UpdateTime':[], 'newScore':[], 'maxScore':[]}
         for id, user in enumerate(self.users.values()):
-            table['Rank'].append(id + 1)
             table['Nickname'].append(user.username[0])
-            table['UpdataTime'].append(user.getNewestInfo()[0])
-            table['Score'].append(user.getNewestInfo()[1])
-        table = pd.DataFrame(table)
-        return table.sort_values(by='Score', ascending=False)
+            table['UpdateTime'].append(user.getNewestInfo()[0])
+            table['newScore'].append(user.getNewestInfo()[1])
+            table['maxScore'].append(user.getMaxInfo()[1])
+
+        table = pd.DataFrame(table).sort_values(by='maxScore', ascending=False)
+        table.loc[:, 'maxRank'] = np.linspace(1, table.shape[0], table.shape[0]).astype(int)
+
+        table = table.sort_values(by='newScore', ascending=False)
+        table.loc[:, 'newRank'] = np.linspace(1, table.shape[0], table.shape[0]).astype(int)
+
+        table = table.loc[:, ['newRank', 'maxRank', 'Nickname', 'UpdateTime', 'newScore', 'maxScore']]
+        return table
 
     def getHighestRankTable(self):
-        table = {'Rank':[], 'Nickname':[], 'UpdataTime':[], 'Score':[]}
+        table = {'Nickname':[], 'UpdateTime':[], 'newScore':[], 'maxScore':[]}
         for id, user in enumerate(self.users.values()):
-            table['Rank'].append(id + 1)
             table['Nickname'].append(user.getNickname())
-            table['UpdataTime'].append(user.getMaxInfo()[0])
-            table['Score'].append(user.getMaxInfo()[1])
-        table = pd.DataFrame(table)
-        return table.sort_values(by='Score', ascending=False)
+            table['UpdateTime'].append(user.getMaxInfo()[0])
+            table['newScore'].append(user.getNewestInfo()[1])
+            table['maxScore'].append(user.getMaxInfo()[1])
+
+        table = pd.DataFrame(table).sort_values(by='newScore', ascending=False)
+        table.loc[:, 'newRank'] = np.linspace(1, table.shape[0], table.shape[0]).astype(int)
+
+        table = table.sort_values(by='maxScore', ascending=False)
+        table.loc[:, 'maxRank'] = np.linspace(1, table.shape[0], table.shape[0]).astype(int)
+
+        table = table.loc[:, ['maxRank', 'newRank', 'Nickname', 'UpdateTime', 'newScore', 'maxScore']]
+        return table
 
 # 存储UserTable对象
 def save_users(users, filename='users.pkl'):

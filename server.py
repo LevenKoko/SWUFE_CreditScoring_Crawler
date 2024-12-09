@@ -10,7 +10,7 @@ def run_streamlit():
 
     try:
         # 等待30秒
-        time.sleep(30)
+        time.sleep(300)
     except KeyboardInterrupt:
         # 如果在20秒内按下Ctrl+C，则结束进程
         print("Streamlit is interrupted by user.")

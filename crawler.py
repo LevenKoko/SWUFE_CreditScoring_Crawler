@@ -3,6 +3,7 @@ import pandas as pd
 import json
 from datetime import datetime
 from time import sleep
+import pickle
 
 def getJSON():
     url = "https://matchapi.delist.cn/integral_rank"
@@ -97,12 +98,28 @@ class UserTable():
         table = pd.DataFrame(table)
         return table.sort_values(by='Score', ascending=False)
 
+# 存储UserTable对象
+def save_users(users, filename='users.pkl'):
+    with open(filename, 'wb') as f:
+        pickle.dump(users, f)
+
+# 从本地文件加载UserTable对象
+def load_users(filename='users.pkl'):
+    with open(filename, 'rb') as f:
+        return pickle.load(f)
+
 
 # Init
-data_list = getJSON()['data']['list']
-users = UserTable()
-for data in data_list:
-    users.updateUser(data)
+try:
+    users = load_users()
+    print('加载完成！')
+except:
+    data_list = getJSON()['data']['list']
+    users = UserTable()
+    for data in data_list:
+        users.updateUser(data)
+    print('初始化完成！')
+    
 
 
 
@@ -111,6 +128,8 @@ while True:
     data_list = getJSON()['data']['list']
     for data in data_list:
         users.updateUser(data)
+    save_users(users)
     users.getNewestRankTable().to_csv('./new.csv', index=False)
     users.getHighestRankTable().to_csv('./high.csv', index=False)
+    print('Done!')
     sleep(10)

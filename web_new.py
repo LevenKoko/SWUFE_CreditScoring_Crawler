@@ -9,8 +9,3 @@ st.title('金融科技建模大赛——最新分展示')
 
 df = pd.read_csv('./new.csv')
 st.table(df)
-
-
-'''
-streamlit run st-demo.py
-'''

@@ -1,0 +1,2 @@
+# SWUFE_CreditScoring_Crawler
+爬取西南财经大学Credit Lab竞赛平台排行榜

@@ -1,11 +1,20 @@
 import streamlit as st
 import pandas as pd
+from streamlit_autorefresh import st_autorefresh
 
-# markdown
-st.markdown('最新分展示')
+@st.cache_data
+def load_data(filepath):
+    return pd.read_csv(filepath)
+
+
+refresh_interval = 30 * 1000
+st_autorefresh(interval=refresh_interval, key="data_refresh")
 
 # 设置网页标题
 st.title('金融科技建模大赛——最新分展示')
+st.markdown("比赛地址：[点击跳转](https://match.creditscoring.cn/#/SingleItem?id=21)")
+st.text('站点收集了从12月9日17时30分开始的提交数据。')
+
 
 def highlight_greater(s):
     return ['background-color: yellow' if s['maxScore'] > s['newScore'] + 5e-5 else '' for _ in s]
@@ -13,4 +22,14 @@ def highlight_greater(s):
 df = pd.read_csv('./data/new.csv')
 styled_df = df.style.apply(highlight_greater, axis=1)
 
-st.table(styled_df)
+st.dataframe(
+    styled_df,
+    column_config={
+        "listScore": st.column_config.LineChartColumn(
+            "History Scores", y_min=0.77, y_max=0.8
+        ),
+    },
+    height=1500,
+    width=1400,
+    hide_index=True,
+)

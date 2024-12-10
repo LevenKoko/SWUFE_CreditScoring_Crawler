@@ -80,12 +80,13 @@ class UserTable():
             self.users[data['username']] = UserInfo(data['username'], data['nickname'], data['update_time'], data['max_score'])
 
     def getNewestRankTable(self):
-        table = {'Nickname':[], 'UpdateTime':[], 'newScore':[], 'maxScore':[]}
+        table = {'Nickname':[], 'UpdateTime':[], 'newScore':[], 'maxScore':[], 'listScore':[]}
         for id, user in enumerate(self.users.values()):
             table['Nickname'].append(user.username[0])
             table['UpdateTime'].append(user.getNewestInfo()[0])
             table['newScore'].append(user.getNewestInfo()[1])
             table['maxScore'].append(user.getMaxInfo()[1])
+            table['listScore'].append(user.scores)
 
         table = pd.DataFrame(table).sort_values(by='maxScore', ascending=False)
         table.loc[:, 'maxRank'] = np.linspace(1, table.shape[0], table.shape[0]).astype(int)
@@ -93,16 +94,17 @@ class UserTable():
         table = table.sort_values(by='newScore', ascending=False)
         table.loc[:, 'newRank'] = np.linspace(1, table.shape[0], table.shape[0]).astype(int)
 
-        table = table.loc[:, ['newRank', 'maxRank', 'Nickname', 'UpdateTime', 'newScore', 'maxScore']]
+        table = table.loc[:, ['newRank', 'maxRank', 'Nickname', 'UpdateTime', 'newScore', 'maxScore', 'listScore']]
         return table
 
     def getHighestRankTable(self):
-        table = {'Nickname':[], 'UpdateTime':[], 'newScore':[], 'maxScore':[]}
+        table = {'Nickname':[], 'UpdateTime':[], 'newScore':[], 'maxScore':[], 'listScore':[]}
         for id, user in enumerate(self.users.values()):
             table['Nickname'].append(user.getNickname())
             table['UpdateTime'].append(user.getMaxInfo()[0])
             table['newScore'].append(user.getNewestInfo()[1])
             table['maxScore'].append(user.getMaxInfo()[1])
+            table['listScore'].append(user.scores)
 
         table = pd.DataFrame(table).sort_values(by='newScore', ascending=False)
         table.loc[:, 'newRank'] = np.linspace(1, table.shape[0], table.shape[0]).astype(int)
@@ -110,7 +112,7 @@ class UserTable():
         table = table.sort_values(by='maxScore', ascending=False)
         table.loc[:, 'maxRank'] = np.linspace(1, table.shape[0], table.shape[0]).astype(int)
 
-        table = table.loc[:, ['maxRank', 'newRank', 'Nickname', 'UpdateTime', 'newScore', 'maxScore']]
+        table = table.loc[:, ['maxRank', 'newRank', 'Nickname', 'UpdateTime', 'newScore', 'maxScore', 'listScore']]
         return table
 
 # 存储UserTable对象

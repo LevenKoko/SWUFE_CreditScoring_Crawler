@@ -5,6 +5,8 @@ from datetime import datetime
 from time import sleep
 import pickle
 import numpy as np
+import traceback
+import logging
 
 def getJSON():
     url = "https://matchapi.delist.cn/integral_rank"
@@ -58,7 +60,7 @@ class UserInfo():
             self.addScore(data['update_time'], data['max_score'])
 
     def getNickname(self):
-        return self.username[0]
+        return ',\n'.join(self.username)
 
     def getNewestInfo(self):
         return (self.times[-1], self.scores[-1])
@@ -82,7 +84,7 @@ class UserTable():
     def getNewestRankTable(self):
         table = {'Nickname':[], 'UpdateTime':[], 'newScore':[], 'maxScore':[], 'listScore':[]}
         for id, user in enumerate(self.users.values()):
-            table['Nickname'].append(user.username[0])
+            table['Nickname'].append(user.getNickname())
             table['UpdateTime'].append(user.getNewestInfo()[0])
             table['newScore'].append(user.getNewestInfo()[1])
             table['maxScore'].append(user.getMaxInfo()[1])
@@ -115,7 +117,7 @@ class UserTable():
         table = table.loc[:, ['maxRank', 'newRank', 'Nickname', 'UpdateTime', 'newScore', 'maxScore', 'listScore']]
         return table
 
-# 存储UserTable对象
+# 存储UserTable对象d
 def save_users(users, filename='./data/users.pkl'):
     with open(filename, 'wb') as f:
         pickle.dump(users, f)
@@ -138,15 +140,27 @@ except:
     print('初始化完成！')
     
 
+logging.basicConfig(format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s',
+                    level=logging.INFO,
+                    filename='./log/crawler.log',
+                    filemode='a')
 
 
+i = 0
 # Loop
 while True:
-    data_list = getJSON()['data']['list']
+    try:
+        data_list = getJSON()['data']['list']
+    except:
+        logging.error(traceback.format_exc())
+        pass
     for data in data_list:
         users.updateUser(data)
     save_users(users)
     users.getNewestRankTable().to_csv('./data/new.csv', index=False)
     users.getHighestRankTable().to_csv('./data/high.csv', index=False)
-    print('Done!')
+    
+    if i % 50 == 0:
+        logging.info(f"{i} :Execute normally!")
+    i += 1
     sleep(10)

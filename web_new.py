@@ -26,7 +26,7 @@ st.dataframe(
     styled_df,
     column_config={
         "listScore": st.column_config.LineChartColumn(
-            "History Scores", y_min=0.77, y_max=0.8
+            "History Scores", y_min=0.7777777, y_max=0.799999
         ),
     },
     height=1500,

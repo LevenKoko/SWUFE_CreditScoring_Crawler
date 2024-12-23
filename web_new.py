@@ -14,7 +14,9 @@ st_autorefresh(interval=refresh_interval, key="data_refresh")
 st.title('金融科技建模大赛——最新分展示')
 st.markdown("比赛地址：[点击跳转](https://match.creditscoring.cn/#/SingleItem?id=21)")
 st.text('站点收集了从12月9日17时30分开始的提交数据。')
-st.text('高亮的行表示了个人历史最高成绩高于最新成绩的选手。')
+st.text('高亮的行表示了个人历史最高成绩高于最新成绩的选手。 ')
+st.markdown('---')
+st.markdown('**upd 12.23 12:03** - 比赛已截止，爬虫后端停止运行。')
 
 
 def highlight_greater(s):
